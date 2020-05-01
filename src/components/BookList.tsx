@@ -5,6 +5,7 @@ import Box from "@material-ui/core/Box";
 
 import Book from "./Book";
 import { IFirestoreBook } from "../services/types";
+import { fbFirestore, fbStorage } from '../services/firebase'
 
 /**
  * Renderiza a lista de livros do firestore
@@ -12,8 +13,28 @@ import { IFirestoreBook } from "../services/types";
 const BookList: React.FC<{}> = () => {
   const [books, setBooks] = useState<Record<string, IFirestoreBook>>({});
 
+  const handleLoadBooks = async () => {
+    const newBooks = { ...books };
+
+    // Retorna todos os documents da collection de livros
+    const { docs } = await fbFirestore.collection('books').get();
+
+    docs.forEach(doc => {
+      const { id } = doc;
+
+      const book: IFirestoreBook = {
+        name: doc.data().name,
+        price: doc.data().price
+      }
+
+      Object.assign(newBooks, { [id]: book });
+    });
+
+    setBooks(newBooks);
+  }
+
   useEffect(() => {
-    setBooks({});
+    handleLoadBooks();
   }, []);
 
   return (
@@ -21,7 +42,7 @@ const BookList: React.FC<{}> = () => {
       <Grid container spacing={2}>
         {Object.entries(books).map(([key, value]) => (
           <Grid sm={6} xs={6} md={2} lg={3} item key={key}>
-            <Book />
+            <Book book={value} id={key}/>
           </Grid>
         ))}
       </Grid>
