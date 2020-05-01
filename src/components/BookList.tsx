@@ -5,7 +5,7 @@ import Box from "@material-ui/core/Box";
 
 import Book from "./Book";
 import { IFirestoreBook } from "../services/types";
-import { fbFirestore, fbStorage } from '../services/firebase'
+import { fbFirestore } from '../services/firebase'
 
 /**
  * Renderiza a lista de livros do firestore
